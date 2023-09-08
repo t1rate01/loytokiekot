@@ -38,15 +38,20 @@ public class Disc {
     @OneToMany(mappedBy = "disc")
     private List<DiscKeyword> discKeywords;
 
+    @Column(name = "notified", nullable = false)
+    private boolean notified = false;
+
+
     public Disc() {
     }
 
-    public Disc(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User postedBy, List<DiscKeyword> discKeywords) {
+    public Disc(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User postedBy, List<DiscKeyword> discKeywords, boolean notified) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.postedBy = postedBy;
         this.discKeywords = discKeywords;
+        this.notified = notified;
     }
 
     public Long getId() {
@@ -89,6 +94,18 @@ public class Disc {
         this.discKeywords = discKeywords;
     }
 
+    public boolean isNotified() {
+        return this.notified;
+    }
+
+    public boolean getNotified() {
+        return this.notified;
+    }
+
+    public void setNotified(boolean notified) {
+        this.notified = notified;
+    }
+
     public Disc id(Long id) {
         setId(id);
         return this;
@@ -114,6 +131,11 @@ public class Disc {
         return this;
     }
 
+    public Disc notified(boolean notified) {
+        setNotified(notified);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -122,12 +144,12 @@ public class Disc {
             return false;
         }
         Disc disc = (Disc) o;
-        return Objects.equals(id, disc.id) && Objects.equals(createdAt, disc.createdAt) && Objects.equals(updatedAt, disc.updatedAt) && Objects.equals(postedBy, disc.postedBy) && Objects.equals(discKeywords, disc.discKeywords);
+        return Objects.equals(id, disc.id) && Objects.equals(createdAt, disc.createdAt) && Objects.equals(updatedAt, disc.updatedAt) && Objects.equals(postedBy, disc.postedBy) && Objects.equals(discKeywords, disc.discKeywords) && notified == disc.notified;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, updatedAt, postedBy, discKeywords);
+        return Objects.hash(id, createdAt, updatedAt, postedBy, discKeywords, notified);
     }
 
     @Override
@@ -138,6 +160,7 @@ public class Disc {
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", postedBy='" + getPostedBy() + "'" +
             ", discKeywords='" + getDiscKeywords() + "'" +
+            ", notified='" + isNotified() + "'" +
             "}";
     }
 
