@@ -25,8 +25,7 @@ public class Keyword {
     public Keyword() {
     }
 
-    public Keyword(Long id, String value, User user) {
-        this.id = id;
+    public Keyword(String value, User user) {
         this.value = value;
         this.user = user;
     }

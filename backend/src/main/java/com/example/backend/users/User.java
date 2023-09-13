@@ -1,19 +1,17 @@
 package com.example.backend.users;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import java.util.Objects;
 
 import com.example.backend.discs.Disc;
 import com.example.backend.keywords.Keyword;
+import com.example.backend.security.Auditable;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,13 +29,13 @@ public class User {
     @Column(unique = true)
     private String phonenumber;
 
-    @CreatedDate     // AIKA on määritetty app propertiesissa UTC, jotta käännettävissä oli db/app missä tahansa hostattuna
+    /*@CreatedDate     // AIKA on määritetty app propertiesissa UTC, jotta käännettävissä oli db/app missä tahansa hostattuna
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;*/
 
     @OneToMany(mappedBy = "user")
     private List<Keyword> keywords;
@@ -49,16 +47,13 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, String email, String phonenumber, LocalDateTime createdAt, LocalDateTime updatedAt, List<Keyword> keywords, List<Disc> discs) {
-        this.id = id;
+    public User(String username, String password, String email, String phonenumber) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.phonenumber = phonenumber;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.keywords = keywords;
-        this.discs = discs;
+        this.keywords = new ArrayList<>();  // INIT WITH EMPTY LIST
+        this.discs = new ArrayList<>();
     }
 
     public Long getId() {
@@ -101,22 +96,7 @@ public class User {
         this.phonenumber = phonenumber;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+  
     public List<Keyword> getKeywords() {
         return this.keywords;
     }
@@ -158,15 +138,7 @@ public class User {
         return this;
     }
 
-    public User createdAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
-    }
 
-    public User updatedAt(LocalDateTime updatedAt) {
-        setUpdatedAt(updatedAt);
-        return this;
-    }
 
     public User keywords(List<Keyword> keywords) {
         setKeywords(keywords);
@@ -176,37 +148,6 @@ public class User {
     public User discs(List<Disc> discs) {
         setDiscs(discs);
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof User)) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(phonenumber, user.phonenumber) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt) && Objects.equals(keywords, user.keywords) && Objects.equals(discs, user.discs);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username, password, email, phonenumber, createdAt, updatedAt, keywords, discs);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " id='" + getId() + "'" +
-            ", username='" + getUsername() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", phonenumber='" + getPhonenumber() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", updatedAt='" + getUpdatedAt() + "'" +
-            ", keywords='" + getKeywords() + "'" +
-            ", discs='" + getDiscs() + "'" +
-            "}";
     }
 
 

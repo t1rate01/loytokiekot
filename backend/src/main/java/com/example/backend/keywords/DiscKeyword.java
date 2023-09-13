@@ -23,8 +23,7 @@ public class DiscKeyword {
     public DiscKeyword() {
     }
 
-    public DiscKeyword(Long id, String value, Disc disc) {
-        this.id = id;
+    public DiscKeyword(String value, Disc disc) {
         this.value = value;
         this.disc = disc;
     }

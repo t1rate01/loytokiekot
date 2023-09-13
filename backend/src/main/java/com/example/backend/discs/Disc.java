@@ -3,40 +3,36 @@ package com.example.backend.discs;
 import java.time.LocalDateTime;
 
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.backend.keywords.DiscKeyword;
+import com.example.backend.security.Auditable;
 import com.example.backend.users.User;
 
 import jakarta.persistence.*;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.List;
 
 
 
 @Entity
 @Table(name = "discs")
-public class Disc {
+@EntityListeners(AuditingEntityListener.class)
+public class Disc extends Auditable{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private String discname;
 
     @ManyToOne
     @JoinColumn(name = "posted_by", nullable = false)
     private User postedBy;  // viittaa user entityyn
 
-    @OneToMany(mappedBy = "disc")
-    private List<DiscKeyword> discKeywords;
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "disc")
+    private List<DiscKeyword> discKeywords = new ArrayList<>();
 
     @Column(name = "notified", nullable = false)
     private boolean notified = false;
@@ -45,14 +41,29 @@ public class Disc {
     public Disc() {
     }
 
-    public Disc(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User postedBy, List<DiscKeyword> discKeywords, boolean notified) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    public Disc(User postedBy) {
         this.postedBy = postedBy;
-        this.discKeywords = discKeywords;
-        this.notified = notified;
+        this.notified = false;
     }
+
+    public void addKeyword(DiscKeyword discKeyword) {
+        discKeywords.add(discKeyword);
+        discKeyword.setDisc(this);
+    }
+    
+    public void removeKeyword(DiscKeyword discKeyword) {
+        discKeywords.remove(discKeyword);
+        discKeyword.setDisc(null);
+    }
+    
+    public String getDiscname() {
+        return this.discname;
+    }
+
+    public void setDiscname(String discname) {
+        this.discname = discname;
+    }
+
 
     public Long getId() {
         return this.id;
@@ -62,21 +73,6 @@ public class Disc {
         this.id = id;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public User getPostedBy() {
         return this.postedBy;
@@ -136,32 +132,5 @@ public class Disc {
         return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Disc)) {
-            return false;
-        }
-        Disc disc = (Disc) o;
-        return Objects.equals(id, disc.id) && Objects.equals(createdAt, disc.createdAt) && Objects.equals(updatedAt, disc.updatedAt) && Objects.equals(postedBy, disc.postedBy) && Objects.equals(discKeywords, disc.discKeywords) && notified == disc.notified;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, createdAt, updatedAt, postedBy, discKeywords, notified);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " id='" + getId() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", updatedAt='" + getUpdatedAt() + "'" +
-            ", postedBy='" + getPostedBy() + "'" +
-            ", discKeywords='" + getDiscKeywords() + "'" +
-            ", notified='" + isNotified() + "'" +
-            "}";
-    }
 
 }
