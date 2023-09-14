@@ -47,10 +47,10 @@ public class User extends Auditable{
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;*/
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)  // cascade = remove, when user is deleted, all userkeywords are deleted
     private List<UserKeyword> keywords;
 
-    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.REMOVE) // cascade = remove, when user is deleted, all users discs are deleted
     private List<Disc> discs;
 
     public User() {

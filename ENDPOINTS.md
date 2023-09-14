@@ -1,103 +1,152 @@
-# API Documentation
+## Disc Tracker API Documentation
 
-## Add a New Disc
-- **Endpoint:** `/api/discs`
-- **Method:** `POST`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-  - `DiscDto` (Request Body): JSON object containing disc information
+### Registration and Authentication
 
-## Get All Discs
-- **Endpoint:** `/api/discs`
-- **Method:** `GET`
-- **Body:** None
+#### Register a new user
 
-## Get Discs by Region
-- **Endpoint:** `/api/discs/region/{region}`
-- **Method:** `GET`
-- **Body:** None
-
-## Get Discs by City
-- **Endpoint:** `/api/discs/city/{city}`
-- **Method:** `GET`
-- **Body:** None
-
-## Get Disc by ID
-- **Endpoint:** `/api/discs/{id}`
-- **Method:** `GET`
-- **Body:** None
-
-## Get Discs by User
-- **Endpoint:** `/api/discs/user/{username}`
-- **Method:** `GET`
-- **Body:** None
-
-## Get Discs by Token
-- **Endpoint:** `/api/discs/user`
-- **Method:** `GET`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-
-## Update Disc
-- **Endpoint:** `/api/discs/{id}`
-- **Method:** `PATCH`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-  - `UpdateDiscDto` (Request Body): JSON object containing updated disc information
-
-## Delete Disc
-- **Endpoint:** `/api/discs/{id}`
-- **Method:** `DELETE`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-
-## Get All User Keywords
-- **Endpoint:** `/api/user/keywords`
-- **Method:** `GET`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-
-## Add User Keyword
-- **Endpoint:** `/api/user/keywords`
-- **Method:** `POST`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-  - `UserKeyWordDto` (Request Body): JSON object containing the keyword to be added
-
-## Delete User Keyword
-- **Endpoint:** `/api/user/keywords/{id}`
-- **Method:** `DELETE`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-
-## Update User Keyword
-- **Endpoint:** `/api/user/keywords`
-- **Method:** `PATCH`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
-  - `UserKeyWordDto` (Request Body): JSON object containing updated keyword information
-
-## User Registration
 - **Endpoint:** `/api/register`
-- **Method:** `POST`
+- **Method:** POST
 - **Body:**
-  - `RegisterDto` (Request Body): JSON object containing user registration information
+  - `username` (string)
+  - `password` (string)
+  - `email` (string)
+  - `phonenumber` (string)
+  - `region` (string)
+  - `city` (string)
+  - `description` (string)
 
-## User Login
+#### Login
+
 - **Endpoint:** `/api/login`
-- **Method:** `POST`
-- **Body:**
-  - `Authorization` (Header): Basic Authentication with username and password
+- **Method:** POST
+- **Header:**
+  - `Authorization` (string) - Basic auth credentials
+  
 
-## Delete User
-- **Endpoint:** `/api/user`
-- **Method:** `DELETE`
-- **Body:**
-  - `Authorization` (Header): Token for user authentication
+### User Operations
 
-## Update User
+#### Update User
+
 - **Endpoint:** `/api/user`
-- **Method:** `PATCH`
+- **Method:** PATCH
+- **Header:**
+  - `Authorization` (string) - Token
 - **Body:**
-  - `Authorization` (Header): Token for user authentication
-  - `UpdateDto` (Request Body): JSON object containing updated user information
+  - Refer to `UpdateDto` for fields
+
+#### Delete User
+
+- **Endpoint:** `/api/user`
+- **Method:** DELETE
+- **Header:**
+  - `Authorization` (string) - Token
+
+
+### Disc Operations
+
+#### Add Disc
+
+- **Endpoint:** `/api/discs`
+- **Method:** POST
+- **Header:**
+  - `Authorization` (string) - Bearer token
+- **Body:**
+  - Refer to `DiscDto` for fields
+
+#### Get All Discs
+
+- **Endpoint:** `/api/discs`
+- **Method:** GET
+
+#### Get Disc by ID
+
+- **Endpoint:** `/api/discs/{id}`
+- **Method:** GET
+- **Path Variables:**
+  - `id` (Long) - ID of the disc
+
+#### Get Discs by Region
+
+- **Endpoint:** `/api/discs/region/{region}`
+- **Method:** GET
+- **Path Variables:**
+  - `region` (string) - Region name
+
+#### Get Discs by City
+
+- **Endpoint:** `/api/discs/city/{city}`
+- **Method:** GET
+- **Path Variables:**
+  - `city` (string) - City name
+
+#### Get Discs by User (by username)
+
+- **Endpoint:** `/api/discs/user/{username}`
+- **Method:** GET
+- **Path Variables:**
+  - `username` (string) - Username
+
+#### Get Discs by User (by token)
+
+- **Endpoint:** `/api/discs/user`
+- **Method:** GET
+- **Header:**
+  - `Authorization` (string) - Token
+
+#### Update Disc
+
+- **Endpoint:** `/api/discs/{id}`
+- **Method:** PATCH
+- **Header:**
+  - `Authorization` (string) - Token
+- **Path Variables:**
+  - `id` (Long) - ID of the disc
+- **Body:**
+  - Refer to `UpdateDiscDto` for fields
+
+#### Delete Disc
+
+- **Endpoint:** `/api/discs/{id}`
+- **Method:** DELETE
+- **Header:**
+  - `Authorization` (string) - Token
+- **Path Variables:**
+  - `id` (Long) - ID of the disc
+
+
+### User Keywords Operations
+
+#### Get All User Keywords
+
+- **Endpoint:** `/api/user/keywords`
+- **Method:** GET
+- **Header:**
+  - `Authorization` (string) - Bearer token
+
+#### Add User Keyword
+
+- **Endpoint:** `/api/user/keywords`
+- **Method:** POST
+- **Header:**
+  - `Authorization` (string) - Bearer token
+- **Body:**
+  - Refer to `UserKeyWordDto` for fields
+
+#### Update User Keyword
+
+- **Endpoint:** `/api/user/keywords`
+- **Method:** PATCH
+- **Header:**
+  - `Authorization` (string) - Bearer token
+- **Body:**
+  - Refer to `UserKeyWordDto` for fields
+
+#### Delete User Keyword
+
+- **Endpoint:** `/api/user/keywords/{id}`
+- **Method:** DELETE
+- **Header:**
+  - `Authorization` (string) - Bearer token
+- **Path Variables:**
+  - `id` (Long) - ID of the user keyword
+

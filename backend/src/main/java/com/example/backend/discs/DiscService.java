@@ -30,7 +30,31 @@ public class DiscService {
     public DiscService() {
     }
 
-    public List<Disc> getAllDiscs() {
+   
+    public void updateDiscById(Long id, UpdateDiscDto updateDiscDto){   // For update, works with Dto also when new keywords are added
+            Disc disc = discRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found"));
+
+            updateDiscDto.getDiscname().ifPresent(disc::setDiscname);
+            
+            updateDiscDto.getKeywords().ifPresent(keywordStrings -> {
+                List<DiscKeyword> discKeywords = keywordStrings.stream()
+                        .map(keywordString -> {
+                            DiscKeyword discKeyword = new DiscKeyword();
+                            discKeyword.setValue(keywordString);
+                            return discKeyword;
+                        })
+                        .collect(Collectors.toList());
+                disc.setDiscKeywords(discKeywords);
+            });
+
+            discRepository.save(disc);
+    }
+   
+    public Boolean checkIfNotified(Disc disc) {  // FOR THE TIMED CHECK FUNCTION
+        return disc.isNotified();
+    }
+
+     public List<Disc> getAllDiscs() {
         return discRepository.findAll();
     }
 
@@ -49,29 +73,6 @@ public class DiscService {
 
     public void updateDisc(Disc disc) {
         discRepository.save(disc);
-    }
-
-    public void updateDiscById(Long id, UpdateDiscDto updateDiscDto){   // For update, works with Dto also when new keywords are added
-            Disc disc = discRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disc not found"));
-
-            updateDiscDto.getDiscname().ifPresent(disc::setDiscname);
-            
-            updateDiscDto.getKeywords().ifPresent(keywordStrings -> {
-                List<DiscKeyword> discKeywords = keywordStrings.stream()
-                        .map(keywordString -> {
-                            DiscKeyword discKeyword = new DiscKeyword();
-                            discKeyword.setValue(keywordString);
-                            return discKeyword;
-                        })
-                        .collect(Collectors.toList());
-                disc.setDiscKeywords(discKeywords);
-            });
-
-            discRepository.save(disc);
-        }
-
-    public Boolean checkIfNotified(Disc disc) {  // FOR THE TIMED CHECK FUNCTION
-        return disc.isNotified();
     }
 
     public void deleteDisc(Long id) {

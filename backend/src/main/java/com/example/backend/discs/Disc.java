@@ -31,7 +31,7 @@ public class Disc extends Auditable{
     @JoinColumn(name = "posted_by", nullable = false)
     private User postedBy;  // viittaa user entityyn
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "disc", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "disc", cascade = CascadeType.REMOVE) // cascade = remove, when disc is deleted, all disc keywords are deleted
     private List<DiscKeyword> discKeywords = new ArrayList<>();
 
     @Column(name = "notified", nullable = false)
