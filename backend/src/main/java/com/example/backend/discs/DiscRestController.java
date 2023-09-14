@@ -24,10 +24,10 @@ import com.example.backend.discs.dto.DiscDto;
 import com.example.backend.discs.dto.GetDiscDto;
 import com.example.backend.discs.dto.UpdateDiscDto;
 import com.example.backend.keywords.DiscKeyWordRepository;
+import com.example.backend.keywords.DiscKeyWordService;
 import com.example.backend.keywords.DiscKeyword;
 import com.example.backend.security.SecurityService;
 import com.example.backend.users.UserRepository;
-
 
 import com.example.backend.users.User;
 
@@ -45,14 +45,18 @@ public class DiscRestController {
     DiscRepository discRepository;
     @Autowired
     DiscKeyWordRepository discKeywordRepository;
+    @Autowired
+    DiscKeyWordService discKeyWordService;
  
 
-    public DiscRestController(DiscService discService,  UserRepository userRepository, DiscRepository discRepository, DiscKeyWordRepository discKeywordRepository)
+    public DiscRestController(DiscService discService,  UserRepository userRepository, DiscRepository discRepository, DiscKeyWordRepository discKeywordRepository, SecurityService securityService, DiscKeyWordService discKeyWordService)
     {
         this.discService = discService;
         this.userRepository = userRepository;
         this.discRepository = discRepository;
         this.discKeywordRepository = discKeywordRepository;
+        this.securityService = securityService;
+        this.discKeyWordService = discKeyWordService;
     }
 
     @PostMapping("/api/discs")
@@ -98,7 +102,16 @@ public class DiscRestController {
             // In case of DB error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not create disc");
         }
-    
+
+        if(discKeyWordService.DiscKeyWordMatchesUserKeyWord(discKeywords)){ // Boolean check, important !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //newDisc.setNotified(true);
+
+           
+        
+         //  NEED FUNCTION HERE TO TRIGGER AN ACTUAL NOTIFICATION, AND THEN SET NOTIFIED TO TRUE
+            
+            return ResponseEntity.ok("Disc created successfully, owner notified");  // Placeholder for testing
+        }
         return ResponseEntity.ok("Disc created successfully");
     }
 

@@ -47,10 +47,10 @@ public class User extends Auditable{
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;*/
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<UserKeyword> keywords;
 
-    @OneToMany(mappedBy = "postedBy")
+    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.REMOVE)
     private List<Disc> discs;
 
     public User() {

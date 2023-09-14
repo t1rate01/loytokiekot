@@ -13,6 +13,8 @@ public class DiscKeyWordService {
 
     @Autowired
     DiscKeyWordRepository keyWordRepository;
+    @Autowired
+    UserKeyWordRepository userKeyWordRepository;
 
     public DiscKeyWordService() {
     }
@@ -35,6 +37,18 @@ public class DiscKeyWordService {
 
     public void deleteKeyWord(Long id) {
         keyWordRepository.deleteById(id);
+    }
+
+    public Boolean DiscKeyWordMatchesUserKeyWord(List<DiscKeyword> discKeywords){  // WHEN ADDING DISCS, CHECKS IF DISC KEYWORDS MATCH USER KEYWORDS, RETURNS BOOLEAN
+        List<UserKeyword> currentKeyWords = userKeyWordRepository.findAll();
+        for (DiscKeyword discKeyword : discKeywords) {
+            for (UserKeyword userKeyword : currentKeyWords) {
+                if (discKeyword.getValue().equals(userKeyword.getValue())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     
