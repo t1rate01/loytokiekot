@@ -37,13 +37,20 @@ public class Disc extends Auditable{
     @Column(name = "notified", nullable = false)
     private boolean notified = false;
 
+    private String region;
+
+    private String city;
+
 
     public Disc() {
     }
 
-    public Disc(User postedBy) {
+    public Disc(User postedBy, String discname, String region, String city) {
         this.postedBy = postedBy;
         this.notified = false;
+        this.discname = discname;
+        this.region = region;
+        this.city = city;
     }
 
     public void addKeyword(DiscKeyword discKeyword) {
@@ -64,6 +71,25 @@ public class Disc extends Auditable{
         this.discname = discname;
     }
 
+    
+    public String getRegion() {
+        return this.region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    
 
     public Long getId() {
         return this.id;

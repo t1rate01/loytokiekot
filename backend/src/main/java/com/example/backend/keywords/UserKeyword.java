@@ -7,8 +7,8 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "keywords")
-public class Keyword {
+@Table(name = "user_keywords")
+public class UserKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +22,10 @@ public class Keyword {
     private User user;  // viittaa user entityyn
 
 
-    public Keyword() {
+    public UserKeyword() {
     }
 
-    public Keyword(String value, User user) {
+    public UserKeyword(String value, User user) {
         this.value = value;
         this.user = user;
     }
@@ -54,17 +54,17 @@ public class Keyword {
         this.user = user;
     }
 
-    public Keyword id(Long id) {
+    public UserKeyword id(Long id) {
         setId(id);
         return this;
     }
 
-    public Keyword value(String value) {
+    public UserKeyword value(String value) {
         setValue(value);
         return this;
     }
 
-    public Keyword user(User user) {
+    public UserKeyword user(User user) {
         setUser(user);
         return this;
     }
@@ -73,10 +73,10 @@ public class Keyword {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Keyword)) {
+        if (!(o instanceof UserKeyword)) {
             return false;
         }
-        Keyword keyword = (Keyword) o;
+        UserKeyword keyword = (UserKeyword) o;
         return Objects.equals(id, keyword.id) && Objects.equals(value, keyword.value) && Objects.equals(user, keyword.user);
     }
 

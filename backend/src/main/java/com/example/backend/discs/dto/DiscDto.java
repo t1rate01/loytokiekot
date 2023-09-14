@@ -1,4 +1,4 @@
-package com.example.backend.discs;
+package com.example.backend.discs.dto;
 
 import java.util.List;
 
@@ -6,6 +6,8 @@ import java.util.List;
 public class DiscDto {   // DTO For the post process, frontend sends a disc + list of keywords, which are stored in different tables
     private String discname;
     private List<String> keywords;
+    private String region;
+    private String city;
 
 
     public DiscDto() {
@@ -18,6 +20,22 @@ public class DiscDto {   // DTO For the post process, frontend sends a disc + li
 
     public List<String> getKeywords() {
         return this.keywords;
+    }
+
+    public String getRegion() {
+        return this.region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setKeywords(List<String> keywords) {

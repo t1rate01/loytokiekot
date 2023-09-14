@@ -1,6 +1,8 @@
-package com.example.backend.discs;
+package com.example.backend.discs.dto;
 
 import java.util.stream.Collectors;
+
+import com.example.backend.discs.Disc;
 import com.example.backend.keywords.DiscKeyword;
 
 import java.util.List;
@@ -12,6 +14,8 @@ public class GetDiscDto { // DTO to avoid lazy loading errors
     private String postedBy;
     private List<String> discKeywords;
     private boolean notified;
+    private String region;
+    private String city;
 
     public GetDiscDto(Disc disc) {
         this.id = disc.getId();
@@ -21,6 +25,8 @@ public class GetDiscDto { // DTO to avoid lazy loading errors
                                 .map(DiscKeyword::getValue) 
                                 .collect(Collectors.toList());
         this.notified = disc.isNotified();
+        this.region = disc.getRegion();
+        this.city = disc.getCity();
     }
 
     public Long getId() {
@@ -37,6 +43,22 @@ public class GetDiscDto { // DTO to avoid lazy loading errors
 
     public void setDiscname(String discname) {
         this.discname = discname;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region= region;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city= city;
     }
 
     public String getPostedBy() {

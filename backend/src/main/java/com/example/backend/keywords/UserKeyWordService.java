@@ -2,37 +2,45 @@ package com.example.backend.keywords;
 
 import org.springframework.stereotype.Service;
 
+import com.example.backend.users.User;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
-public class KeyWordService {
+public class UserKeyWordService {
 
     @Autowired
-    DiscKeyWordRepository keyWordRepository;
+    UserKeyWordRepository keyWordRepository;
 
-    public KeyWordService() {
+    public UserKeyWordService() {
     }
 
-    public List<DiscKeyword> getAllKeyWords() {
+    public List<UserKeyword> getAllKeyWords() {
         return keyWordRepository.findAll();
     }
 
-    public DiscKeyword getKeyWordById(Long id) {
+    public UserKeyword getKeyWordById(Long id) {
         return keyWordRepository.findById(id).orElse(null);
     }
 
-    public void addKeyWord(DiscKeyword keyWord) {
+    public void addKeyWord(UserKeyword keyWord) {
         keyWordRepository.save(keyWord);
     }
 
-    public void updateKeyWord(DiscKeyword keyWord) {
+    public void updateKeyWord(UserKeyword keyWord) {
         keyWordRepository.save(keyWord);
     }
 
     public void deleteKeyWord(Long id) {
         keyWordRepository.deleteById(id);
     }
+
+
+    public List<UserKeyword> getAllKeyWordsByUser(User user) {
+        return keyWordRepository.findAllByUser(user);
+    }
+
 
 }

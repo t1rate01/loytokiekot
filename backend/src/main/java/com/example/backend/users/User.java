@@ -6,7 +6,7 @@ import java.util.List;
 
 
 import com.example.backend.discs.Disc;
-import com.example.backend.keywords.Keyword;
+import com.example.backend.keywords.UserKeyword;
 import com.example.backend.security.Auditable;
 
 @Entity
@@ -29,6 +29,16 @@ public class User extends Auditable{
     @Column(unique = true)
     private String phonenumber;
 
+    @Column(length = 2000, columnDefinition = "VARCHAR(2000)")
+    private String description;
+
+
+    private String region;
+
+    private String city;
+
+    
+
     /*@CreatedDate     // AIKA on määritetty app propertiesissa UTC, jotta käännettävissä oli db/app missä tahansa hostattuna
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -38,7 +48,7 @@ public class User extends Auditable{
     private LocalDateTime updatedAt;*/
 
     @OneToMany(mappedBy = "user")
-    private List<Keyword> keywords;
+    private List<UserKeyword> keywords;
 
     @OneToMany(mappedBy = "postedBy")
     private List<Disc> discs;
@@ -46,13 +56,16 @@ public class User extends Auditable{
     public User() {
     }
 
-    public User(String username, String password, String email, String phonenumber) {
+    public User(String username, String password, String email, String phonenumber, String region, String city, String description) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.phonenumber = phonenumber;
         this.keywords = new ArrayList<>();  // INIT WITH EMPTY LIST
         this.discs = new ArrayList<>();
+        this.region = region;
+        this.city = city;
+        this.description = description;
     }
 
     public Long getId() {
@@ -61,6 +74,30 @@ public class User extends Auditable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRegion() {
+        return this.region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getUsername() {
@@ -96,11 +133,11 @@ public class User extends Auditable{
     }
 
   
-    public List<Keyword> getKeywords() {
+    public List<UserKeyword> getKeywords() {
         return this.keywords;
     }
 
-    public void setKeywords(List<Keyword> keywords) {
+    public void setKeywords(List<UserKeyword> keywords) {
         this.keywords = keywords;
     }
 
@@ -139,7 +176,7 @@ public class User extends Auditable{
 
 
 
-    public User keywords(List<Keyword> keywords) {
+    public User keywords(List<UserKeyword> keywords) {
         setKeywords(keywords);
         return this;
     }
