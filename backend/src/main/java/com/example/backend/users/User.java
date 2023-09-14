@@ -43,7 +43,6 @@ public class User extends Auditable{
     @OneToMany(mappedBy = "postedBy")
     private List<Disc> discs;
 
-
     public User() {
     }
 
