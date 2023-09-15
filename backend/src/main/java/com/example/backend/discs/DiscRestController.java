@@ -26,6 +26,7 @@ import com.example.backend.discs.dto.UpdateDiscDto;
 import com.example.backend.keywords.DiscKeyWordRepository;
 import com.example.backend.keywords.DiscKeyWordService;
 import com.example.backend.keywords.DiscKeyword;
+import com.example.backend.security.ProfanityFilterService;
 import com.example.backend.security.SecurityService;
 import com.example.backend.users.UserRepository;
 
@@ -47,9 +48,11 @@ public class DiscRestController {
     DiscKeyWordRepository discKeywordRepository;
     @Autowired
     DiscKeyWordService discKeyWordService;
+    @Autowired
+    ProfanityFilterService profanityFilterService;
  
 
-    public DiscRestController(DiscService discService,  UserRepository userRepository, DiscRepository discRepository, DiscKeyWordRepository discKeywordRepository, SecurityService securityService, DiscKeyWordService discKeyWordService)
+    public DiscRestController(DiscService discService,  UserRepository userRepository, DiscRepository discRepository, DiscKeyWordRepository discKeywordRepository, SecurityService securityService, DiscKeyWordService discKeyWordService, ProfanityFilterService profanityFilterService)
     {
         this.discService = discService;
         this.userRepository = userRepository;
@@ -57,6 +60,7 @@ public class DiscRestController {
         this.discKeywordRepository = discKeywordRepository;
         this.securityService = securityService;
         this.discKeyWordService = discKeyWordService;
+        this.profanityFilterService = profanityFilterService;
     }
 
     @PostMapping("/api/discs")
@@ -85,6 +89,11 @@ public class DiscRestController {
     
         // Get the keywords from DTO
         List<String> keywords = discDto.getKeywords();
+
+        // check for profanity
+        if(profanityFilterService.containsProfanity(keywords)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Keywords contain profanity");
+        }
     
         // Create a new list to store the DiscKeyword objects
         List<DiscKeyword> discKeywords = new ArrayList<>();
@@ -196,20 +205,35 @@ public class DiscRestController {
     
 
     @PatchMapping("/api/discs/{id}")
-    public ResponseEntity<String> updateDisc(@RequestHeader("Authorization") String token ,@PathVariable Long id, @RequestBody UpdateDiscDto updateDiscDto){
-        try {
-            String username = securityService.getUsernameFromToken(token);
-            if (username != null) {
-                discService.updateDiscById(id, updateDiscDto);
-                return ResponseEntity.ok("Disc updated successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+public ResponseEntity<String> updateDisc(@RequestHeader("Authorization") String token ,@PathVariable Long id, @RequestBody UpdateDiscDto updateDiscDto){
+    try {
+        String username = securityService.getUsernameFromToken(token);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
         
+        // Get the keywords from DTO
+        Optional<List<String>> optionalKeywords = updateDiscDto.getKeywords();
+
+        if (optionalKeywords.isPresent()) {  // Check isPresent? because keyword updating is optional
+            List<String> keywords = optionalKeywords.get();
+
+            // Check for profanity in the keywords
+            if(profanityFilterService.containsProfanity(keywords)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Keywords contain profanity");
+            }
+        }
+
+        discService.updateDiscById(id, updateDiscDto);
+        return ResponseEntity.ok("Disc updated successfully");
+        
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
     }
+    
+}
+
+
 
     @DeleteMapping("/api/discs/{id}")
     public ResponseEntity<String> deleteDisc(@RequestHeader("Authorization") String token, @PathVariable Long id){
