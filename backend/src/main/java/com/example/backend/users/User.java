@@ -37,6 +37,9 @@ public class User extends Auditable{
 
     private String city;
 
+    @Column(name = "canPostDiscs", nullable = false, columnDefinition = "boolean default false")
+    private boolean canPostDiscs = false;
+
     
 
     /*@CreatedDate     // AIKA on määritetty app propertiesissa UTC, jotta käännettävissä oli db/app missä tahansa hostattuna
@@ -66,7 +69,9 @@ public class User extends Auditable{
         this.region = region;
         this.city = city;
         this.description = description;
+        this.canPostDiscs = false;
     }
+
 
     public Long getId() {
         return this.id;
@@ -74,30 +79,6 @@ public class User extends Auditable{
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getRegion() {
-        return this.region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getCity() {
-        return this.city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getUsername() {
@@ -132,7 +113,42 @@ public class User extends Auditable{
         this.phonenumber = phonenumber;
     }
 
-  
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRegion() {
+        return this.region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public boolean isCanPostDiscs() {
+        return this.canPostDiscs;
+    }
+
+    public boolean getCanPostDiscs() {
+        return this.canPostDiscs;
+    }
+
+    public void setCanPostDiscs(boolean canPostDiscs) {
+        this.canPostDiscs = canPostDiscs;
+    }
+
     public List<UserKeyword> getKeywords() {
         return this.keywords;
     }
@@ -148,43 +164,5 @@ public class User extends Auditable{
     public void setDiscs(List<Disc> discs) {
         this.discs = discs;
     }
-
-    public User id(Long id) {
-        setId(id);
-        return this;
-    }
-
-    public User username(String username) {
-        setUsername(username);
-        return this;
-    }
-
-    public User password(String password) {
-        setPassword(password);
-        return this;
-    }
-
-    public User email(String email) {
-        setEmail(email);
-        return this;
-    }
-
-    public User phonenumber(String phonenumber) {
-        setPhonenumber(phonenumber);
-        return this;
-    }
-
-
-
-    public User keywords(List<UserKeyword> keywords) {
-        setKeywords(keywords);
-        return this;
-    }
-
-    public User discs(List<Disc> discs) {
-        setDiscs(discs);
-        return this;
-    }
-
 
 }

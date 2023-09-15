@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -29,6 +33,7 @@ import com.example.backend.keywords.DiscKeyword;
 import com.example.backend.security.ProfanityFilterService;
 import com.example.backend.security.SecurityService;
 import com.example.backend.users.UserRepository;
+
 
 import com.example.backend.users.User;
 
@@ -81,6 +86,10 @@ public class DiscRestController {
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(username + " is not authorized");
         }
+
+        if (!userOptional.get().getCanPostDiscs()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(username + " is not authorized to post discs");
+        }
     
         User postedBy = userOptional.get();
     
@@ -112,18 +121,18 @@ public class DiscRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not create disc");
         }
 
-        if(discKeyWordService.DiscKeyWordMatchesUserKeyWord(discKeywords)){ // Boolean check, important !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //if(discKeyWordService.DiscKeyWordMatchesUserKeyWord(discKeywords)){ // Boolean check, important !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //newDisc.setNotified(true);
 
            
         
-         //  NEED FUNCTION HERE TO TRIGGER AN ACTUAL NOTIFICATION, AND THEN SET NOTIFIED TO TRUE
+         //  
             
-            return ResponseEntity.ok("Disc created successfully, owner notified");  // Placeholder for testing
-        }
+           // return ResponseEntity.ok("Disc created successfully, owner notified");  // Placeholder for testing
+        //}
         return ResponseEntity.ok("Disc created successfully");
     }
-
+/* 
     @GetMapping("/api/discs")
     public ResponseEntity<List<GetDiscDto>> getDiscs() {
         List<Disc> discs = discService.getAllDiscsWithKeywords();
@@ -131,6 +140,15 @@ public class DiscRestController {
         for (Disc disc : discs) {
             getDiscDtos.add(new GetDiscDto(disc));
         }
+        return ResponseEntity.ok(getDiscDtos);
+    }*/
+
+    @GetMapping("/api/discs")
+    public ResponseEntity<Page<GetDiscDto>> getDiscs(@PageableDefault(size = 10) Pageable pageable) {
+        Page<Disc> discPage = discService.getAllDiscsWithKeywords(pageable);
+        
+        Page<GetDiscDto> getDiscDtos = discPage.map(GetDiscDto::new);
+        
         return ResponseEntity.ok(getDiscDtos);
     }
 
@@ -205,33 +223,33 @@ public class DiscRestController {
     
 
     @PatchMapping("/api/discs/{id}")
-public ResponseEntity<String> updateDisc(@RequestHeader("Authorization") String token ,@PathVariable Long id, @RequestBody UpdateDiscDto updateDiscDto){
-    try {
-        String username = securityService.getUsernameFromToken(token);
-        if (username == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-        
-        // Get the keywords from DTO
-        Optional<List<String>> optionalKeywords = updateDiscDto.getKeywords();
-
-        if (optionalKeywords.isPresent()) {  // Check isPresent? because keyword updating is optional
-            List<String> keywords = optionalKeywords.get();
-
-            // Check for profanity in the keywords
-            if(profanityFilterService.containsProfanity(keywords)){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Keywords contain profanity");
+    public ResponseEntity<String> updateDisc(@RequestHeader("Authorization") String token ,@PathVariable Long id, @RequestBody UpdateDiscDto updateDiscDto){
+        try {
+            String username = securityService.getUsernameFromToken(token);
+            if (username == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
             }
-        }
+            
+            // Get the keywords from DTO
+            Optional<List<String>> optionalKeywords = updateDiscDto.getKeywords();
 
-        discService.updateDiscById(id, updateDiscDto);
-        return ResponseEntity.ok("Disc updated successfully");
+            if (optionalKeywords.isPresent()) {  // Check isPresent? because keyword updating is optional
+                List<String> keywords = optionalKeywords.get();
+
+                // Check for profanity in the keywords
+                if(profanityFilterService.containsProfanity(keywords)){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Keywords contain profanity");
+                }
+            }
+
+            discService.updateDiscById(id, updateDiscDto);
+            return ResponseEntity.ok("Disc updated successfully");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
         
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
     }
-    
-}
 
 
 

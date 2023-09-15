@@ -1,19 +1,26 @@
 package com.example.backend.keywords;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.discs.DiscRepository;
 import com.example.backend.users.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.example.backend.users.User;
 import com.example.backend.discs.Disc;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+
 
 
 
@@ -38,43 +45,64 @@ public class KeyWordMatchingService {
     @Autowired
     NotificationService notificationService;
 
+    @Transactional
     @Scheduled(fixedRate = 60000 * 60 * 3)  // CHECKS EVERY 3 HOURS
     public void findMatchingKeywords() {
-        List<Disc> allDiscs = discRepository.findAll();
+        System.out.println("Keyword matching service activated!");
         List<User> allUsers = userRepository.findAll();
+    
 
-        // ... (the rest of your existing setup code)
+        int totalMatches = 0;
+        int totalDiscKeywordsProcessed = 0;
+        int totalUserKeywordsProcessed = 0;
 
-        for (Disc disc : allDiscs) {
-            if (disc.isNotified()) {
-                continue;
-            }
-
-            Set<String> discKeywords = disc.getDiscKeywords().stream()
-                    .map(DiscKeyword::getValue)
+        for (User user : allUsers) {
+            Set<String> userKeywords = user.getKeywords().stream()
+                    .map(UserKeyword::getValue)  // Adjust this to the correct method to get keyword value
                     .collect(Collectors.toSet());
+            totalUserKeywordsProcessed += userKeywords.size();
 
-            for (User user : allUsers) {
-                if (disc.getPostedBy().getId().equals(user.getId())) {
-                    continue;
-                }
+            Set<Long> processedDiscs = new HashSet<>();
+            
+            int page = 0;
+            Page<Disc> discPage;
+            do {
+                discPage = discRepository.findNonNotifiedDiscsByKeywords(userKeywords, PageRequest.of(page, 100));
+                List<Disc> matchingDiscs = discPage.getContent();
 
-                Set<String> userKeywords = userKeywordsMapping.get(user.getId());
+                for (Disc disc : matchingDiscs) {
+                    if (processedDiscs.contains(disc.getId()) || disc.getPostedBy().getId().equals(user.getId())) {
+                        continue;
+                    }
+                    processedDiscs.add(disc.getId());
 
-                // Find any matching keyword
-                Optional<String> matchingKeywordOpt = userKeywords.stream().filter(discKeywords::contains).findFirst();
-
-                if (matchingKeywordOpt.isPresent()) {
-                    String matchingKeyword = matchingKeywordOpt.get();
-                    disc.setNotified(true);
-                    discRepository.save(disc);
-                    System.out.println("Disc notified");
+                    // Get the matching keyword(s)
+                    Set<String> discKeywords = disc.getDiscKeywords().stream()
+                            .map(DiscKeyword::getValue)
+                            .collect(Collectors.toSet());
+                    totalDiscKeywordsProcessed += discKeywords.size();
                     
-                    notificationService.notifyMatch(disc, user, matchingKeyword);  // Call the notification service
+                    Optional<String> matchingKeywordOpt = userKeywords.stream().filter(discKeywords::contains).findFirst();
 
-                    break;  // Break the inner loop as we have found a match
+                    if (matchingKeywordOpt.isPresent()) {
+                        String matchingKeyword = matchingKeywordOpt.get();
+                        disc.setNotified(true);
+                        
+                        notificationService.notifyMatch(disc, user, matchingKeyword);  // Call the notification service
+
+                        totalMatches++;  // Increment the match counter
+                    }
                 }
-            }
+                
+                discRepository.saveAll(matchingDiscs);
+                page++;
+            } while (page < discPage.getTotalPages());
         }
+
+        System.out.println("Total matches found: " + totalMatches);  // Print the total number of matches found
+        System.out.println("Total disc keywords processed: " + totalDiscKeywordsProcessed);  // Print the total number of disc keywords processed
+        System.out.println("Total user keywords processed: " + totalUserKeywordsProcessed);  // Print the total number of user keywords processed
     }
+
+
 }
