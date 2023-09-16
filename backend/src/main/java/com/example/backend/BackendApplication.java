@@ -32,8 +32,3 @@ public class BackendApplication {
     };
 }
 }
-
-
-
-// muista: kirjainkoosta riippumaton vertailu tarkistusfunktioon
-// seuraavaksi funktio / toiminto joka tarkistaa kiekkoa lisätessä sen avainsanat heti ja vertaa niitä käyttäjien tallentamiin avainsanoihin

@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.keywords.dto.UserInfoDto;
 import com.example.backend.security.dto.LoginErrorDto;
 import com.example.backend.security.dto.LoginResponseDto;
 import com.example.backend.security.dto.RegisterDto;
@@ -69,7 +72,7 @@ public class SecurityRestController {
                         responseDto.setPhonenumber(loggedInUser.getPhonenumber());
                         responseDto.setRegion(loggedInUser.getRegion());
                         responseDto.setCity(loggedInUser.getCity());
-
+                        responseDto.setDescription(loggedInUser.getDescription());
                         return ResponseEntity.ok(responseDto);
                     }
                 } else {
@@ -92,27 +95,66 @@ public class SecurityRestController {
         }
     }
 
-
-
-   /*  @DeleteMapping("/api/user")
-    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {
-        try {
-            if (token != null && token.startsWith("Bearer")) {
-                String jwt = token.split(" ")[1];
-                String username = securityService.verifyToken(jwt);
-                if (username != null) {
-                    String message = securityService.deleteUser(username);
-                    return ResponseEntity.ok(message);
+    @PostMapping("/api/user/forgot")
+    public ResponseEntity<String> forgotPassword(@RequestBody String email){
+        if(email != null && email.trim().length() > 0){
+            try {
+                Boolean reset = securityService.forgotPassword(email);
+                if (reset) {
+                    return ResponseEntity.ok("Password reset link sent");
                 } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not found");
                 }
-            } else {
-                return ResponseEntity.badRequest().body("Missing or wrong authorization header");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
         }
-    } */
+    }
+
+    @GetMapping("/api/user/{username}")
+    public ResponseEntity<?> getUserInfo(@PathVariable String username){
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            UserInfoDto userInfoDto = new UserInfoDto();
+            
+            userInfoDto.setUsername(user.getUsername());
+            userInfoDto.setEmail(user.getEmail());
+            userInfoDto.setPhonenumber(user.getSharePhonenumber() ? user.getPhonenumber() : "Not shared");
+            userInfoDto.setDescription(user.getCanPostDiscs() ? user.getDescription() : "Basic user");
+            userInfoDto.setRegion(user.getRegion());
+            userInfoDto.setCity(user.getCity());
+            
+            return ResponseEntity.ok(userInfoDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+    @GetMapping("/api/user/id/{id}")
+    public ResponseEntity<?> getUserInfo(@PathVariable Long id){
+        Optional<User> userOptional = userRepository.findById(id);
+        
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            UserInfoDto userInfoDto = new UserInfoDto();
+            
+            userInfoDto.setUsername(user.getUsername());
+            userInfoDto.setEmail(user.getEmail());
+            userInfoDto.setPhonenumber(user.getSharePhonenumber() ? user.getPhonenumber() : "Not shared");
+            userInfoDto.setDescription(user.getCanPostDiscs() ? user.getDescription() : "Basic user");
+            userInfoDto.setRegion(user.getRegion());
+            userInfoDto.setCity(user.getCity());
+            
+            return ResponseEntity.ok(userInfoDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 
     @DeleteMapping("/api/user")
     public ResponseEntity<String> deleteUser(@RequestHeader("Authorization")String token){
@@ -143,5 +185,27 @@ public class SecurityRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
+
+    @PatchMapping("/api/user/{token}")
+    public ResponseEntity<String> resetPassword(@PathVariable String token, @RequestBody UpdateDto newPassword){
+        if(token != null && newPassword.getPassword() != null){
+            try {
+                Boolean reset = securityService.resetPassword(token, newPassword.getPassword());
+                if (reset) {
+                    return ResponseEntity.ok("Password reset");
+                } else {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Link not valid");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
+        }
+    }
+
+
+
+    
 
 }

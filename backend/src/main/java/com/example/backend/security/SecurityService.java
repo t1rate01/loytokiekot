@@ -38,6 +38,9 @@ public class SecurityService {
     @Value("${jwt.secret}")  // AUTH
     private String jwtKey;  // KORJAA MYÖHEMMIN
 
+    @Value("${frontend.url}")
+    private String baseUrl;
+
     public SecurityService() {
     }
 
@@ -85,6 +88,14 @@ public class SecurityService {
         return JWT.create()
             .withSubject(username)
             .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))  // 24H
+            .sign(algorithm);
+    }
+
+    public String createTempToken(String username){
+        Algorithm algorithm = Algorithm.HMAC256(jwtKey);
+        return JWT.create()
+            .withSubject(username)
+            .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 15))  // 15 min
             .sign(algorithm);
     }
 
@@ -169,7 +180,37 @@ public class SecurityService {
          }
         return null;
     }
-    
+
+    public boolean forgotPassword(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            String tempToken = createTempToken(userOptional.get().getUsername());
+            
+            // TODO: Send an email with the reset link containing the tempToken as a URL parameter
+            
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validateEmail(String email){
+        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"; 
+        return email.matches(emailRegex);
+    }
+
+    public boolean resetPassword(String token, String newPassword){
+        String username = verifyToken(token);
+        if(username != null){
+            Optional<User> optionalUser = userRepository.findByUsername(username);
+            if(optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.setPassword(enco.encode(newPassword));
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
     
 
     
