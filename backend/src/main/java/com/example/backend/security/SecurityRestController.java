@@ -186,7 +186,7 @@ public class SecurityRestController {
         }
     }
 
-    @PatchMapping("/api/user/{token}")
+    @PostMapping("/api/user/{token}")
     public ResponseEntity<String> resetPassword(@PathVariable String token, @RequestBody UpdateDto newPassword){
         if(token != null && newPassword.getPassword() != null){
             try {

@@ -22,12 +22,6 @@ import com.example.backend.users.UserRepository;
 import jakarta.transaction.Transactional;
 
 
-
-
-
-
-
-
 @Service
 public class SecurityService {
     @Autowired
