@@ -30,6 +30,7 @@ import com.example.backend.discs.dto.UpdateDiscDto;
 import com.example.backend.keywords.DiscKeyWordRepository;
 import com.example.backend.keywords.DiscKeyWordService;
 import com.example.backend.keywords.DiscKeyword;
+import com.example.backend.keywords.UserKeyword;
 import com.example.backend.security.ProfanityFilterService;
 import com.example.backend.security.SecurityService;
 import com.example.backend.users.UserRepository;
@@ -219,6 +220,23 @@ public class DiscRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/api/discs/user/matches")
+    public ResponseEntity<?> getMatchingDiscs(@RequestHeader("Authorization") String token) {
+        try {
+            String username = securityService.verifyToken(token);
+            if (username == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+    
+            return ResponseEntity.ok(discService.findDiscsMatchingUserKeywords(username));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        
+    }
+
 
     
 

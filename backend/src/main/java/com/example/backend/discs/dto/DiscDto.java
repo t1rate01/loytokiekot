@@ -9,6 +9,8 @@ public class DiscDto {   // DTO For the post process, frontend sends a disc + li
     private String region;
     private String city;
     private Integer keepDiscsFor;
+   
+    private Long id;
 
 
     public DiscDto() {
@@ -26,6 +28,15 @@ public class DiscDto {   // DTO For the post process, frontend sends a disc + li
 
     public String getRegion() {
         return this.region;
+    }
+  
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getKeepDiscsFor() {

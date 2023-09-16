@@ -2,6 +2,7 @@ package com.example.backend.discs;
 
 import org.springframework.stereotype.Repository;
 
+
 import com.example.backend.users.User;
 
 import java.time.LocalDate;
@@ -36,6 +37,9 @@ public interface DiscRepository extends JpaRepository<Disc, Long> {
     Page<Disc> findNonNotifiedDiscsByKeywords(@Param("keywords") Set<String> keywords, Pageable pageable);
 
     List<Disc> findByExpirationDateBefore(LocalDate date);
+
+    @Query("SELECT d FROM Disc d JOIN d.discKeywords dk WHERE dk.value IN :values")
+    List<Disc> findMatchingDiscs(@Param("values") List<String> values);
 
 
     

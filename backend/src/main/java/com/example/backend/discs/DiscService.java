@@ -3,15 +3,19 @@ package com.example.backend.discs;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.backend.discs.dto.DiscDto;
 import com.example.backend.discs.dto.UpdateDiscDto;
 import com.example.backend.keywords.DiscKeyWordRepository;
 import com.example.backend.keywords.DiscKeyword;
+import com.example.backend.keywords.UserKeyword;
 import com.example.backend.users.User;
 import com.example.backend.users.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,38 @@ public class DiscService {
             });
 
             discRepository.save(disc);
+    }
+
+    @Transactional
+    public List<DiscDto> findDiscsMatchingUserKeywords(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (!userOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        User user = userOptional.get();
+        List<String> userKeywords = user.getKeywords().stream()
+                                   .map(UserKeyword::getValue)
+                                   .collect(Collectors.toList());
+
+        List<Disc> discs = discRepository.findMatchingDiscs(userKeywords);
+        
+        // Transform Disc entities to Disc DTOs to avoid lazy initialization issues
+        return discs.stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+    }
+
+    private DiscDto toDto(Disc disc) {
+        DiscDto dto = new DiscDto();
+        dto.setDiscname(disc.getDiscname());
+        dto.setRegion(disc.getRegion());
+        dto.setCity(disc.getCity());
+        dto.setId(disc.getId());
+        
+        dto.setKeywords(disc.getDiscKeywords().stream()
+                                .map(DiscKeyword::getValue)
+                                .collect(Collectors.toList()));
+        return dto;
     }
    
     public Boolean checkIfNotified(Disc disc) {  // FOR THE TIMED CHECK FUNCTION
