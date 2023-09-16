@@ -1,6 +1,7 @@
 package com.example.backend.security;
 
 import java.util.Base64;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.security.dto.LoginErrorDto;
+import com.example.backend.security.dto.LoginResponseDto;
 import com.example.backend.security.dto.RegisterDto;
 import com.example.backend.security.dto.UpdateDto;
 import com.example.backend.users.User;
+import com.example.backend.users.UserRepository;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +33,8 @@ public class SecurityRestController {
 
     @Autowired
     SecurityService securityService;
+    @Autowired
+    UserRepository userRepository;
 
     @PostMapping("/api/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) {
@@ -40,25 +46,53 @@ public class SecurityRestController {
         return ResponseEntity.ok("User created");
     }
 
-  @PostMapping("/api/login")
-public ResponseEntity<String> login(@RequestHeader("Authorization") String basicAuth) {
-    try {
-        if (basicAuth != null && basicAuth.startsWith("Basic")) {
-            String credentials = basicAuth.split(" ")[1];
-            String user[] = new String(Base64.getDecoder().decode(credentials)).split(":");
-            String token = securityService.login(user[0], user[1]);
-            if (token != null) {
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Missing or wrong authorization header");
+    @PostMapping("/api/login")
+    public ResponseEntity<?> login(@RequestHeader("Authorization") String basicAuth) {
+        try {
+            if (basicAuth != null && basicAuth.startsWith("Basic")) {
+                String credentials = basicAuth.split(" ")[1];
+                String user[] = new String(Base64.getDecoder().decode(credentials)).split(":");
+                String token = securityService.login(user[0], user[1]);
+                
+                if (token != null && !token.equals("WrongPwd") && !token.equals("NotFound")) { // error messages defined in login function
+                    // Valid token, find user to get additional details
+                    Optional<User> userOptional = userRepository.findByUsername(user[0]);
+                    if (userOptional.isPresent()) {
+                        User loggedInUser = userOptional.get();
+                        LoginResponseDto responseDto = new LoginResponseDto();
+                        responseDto.setToken(token);
+                        responseDto.setKeepDiscsFor(loggedInUser.getKeepDiscsFor());
+                        responseDto.setSharePhonenumber(loggedInUser.isSharePhonenumber());
+                        responseDto.setCanPostDiscs(loggedInUser.isCanPostDiscs());
+                        responseDto.setUsername(loggedInUser.getUsername());
+                        responseDto.setEmail(loggedInUser.getEmail());
+                        responseDto.setPhonenumber(loggedInUser.getPhonenumber());
+                        responseDto.setRegion(loggedInUser.getRegion());
+                        responseDto.setCity(loggedInUser.getCity());
+
+                        return ResponseEntity.ok(responseDto);
+                    }
+                } else {
+                    // Authentication failed, create an error response
+                    LoginErrorDto responseDto = new LoginErrorDto();
+                    if ("WrongPwd".equals(token)) {
+                        responseDto.setErrorMessage("Wrong password");
+                    } else if ("NotFound".equals(token)) {
+                        responseDto.setErrorMessage("User not found");
+                    } else {
+                        responseDto.setErrorMessage("Unauthorized");
+                    }
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
+                }
+            } 
+            new LoginErrorDto("Bad request");
+            return ResponseEntity.badRequest().body(new LoginErrorDto("Bad request"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginErrorDto(  "Unauthorized"));
         }
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
     }
-}
+
+
 
    /*  @DeleteMapping("/api/user")
     public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) {

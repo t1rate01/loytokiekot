@@ -73,10 +73,10 @@ public class SecurityService {
             if(enco.matches(password, user.getPassword())){
                 return createToken(user.getUsername());
             } else {
-                return "Wrong password";
+                return  "WrongPwd";
             }
         } else {
-            return "User not found";
+            return  "NotFound";
         }
     }
 
@@ -127,6 +127,12 @@ public class SecurityService {
             }
             if(updateDto.getCity() != null && updateDto.getCity().trim().length() > 0){
                 user.setCity(updateDto.getCity());
+            }
+            if(updateDto.getDescription() != null && updateDto.getDescription().trim().length() > 0){
+                user.setDescription(updateDto.getDescription());
+            }
+            if(updateDto.getSharePhonenumber() != null){
+                user.setSharePhonenumber(updateDto.getSharePhonenumber());
             }
 
 

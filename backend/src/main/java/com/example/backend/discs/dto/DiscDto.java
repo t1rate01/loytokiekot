@@ -8,14 +8,16 @@ public class DiscDto {   // DTO For the post process, frontend sends a disc + li
     private List<String> keywords;
     private String region;
     private String city;
+    private Integer keepDiscsFor;
 
 
     public DiscDto() {
     }
 
-    public DiscDto(String discname,List<String> keywords) {
+    public DiscDto(String discname,List<String> keywords, Integer keepDiscsFor) {
         this.discname = discname;
         this.keywords = keywords;
+        this.keepDiscsFor = keepDiscsFor;
     }
 
     public List<String> getKeywords() {
@@ -24,6 +26,14 @@ public class DiscDto {   // DTO For the post process, frontend sends a disc + li
 
     public String getRegion() {
         return this.region;
+    }
+
+    public Integer getKeepDiscsFor() {
+        return this.keepDiscsFor;
+    }
+
+    public void setKeepDiscsFor(Integer keepDiscsFor) {
+        this.keepDiscsFor = keepDiscsFor;
     }
 
     public void setRegion(String region) {

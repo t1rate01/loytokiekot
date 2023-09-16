@@ -93,7 +93,7 @@ public class DiscRestController {
     
         User postedBy = userOptional.get();
     
-        Disc newDisc = new Disc(postedBy, discDto.getDiscname(), discDto.getRegion(), discDto.getCity());
+        Disc newDisc = new Disc(postedBy, discDto.getDiscname(), discDto.getRegion(), discDto.getCity(), postedBy.getKeepDiscsFor());
         
     
         // Get the keywords from DTO

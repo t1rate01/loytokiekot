@@ -1,5 +1,6 @@
 package com.example.backend.discs;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -41,16 +42,20 @@ public class Disc extends Auditable{
 
     private String city;
 
+    @Column
+    private LocalDate expirationDate;
+
 
     public Disc() {
     }
 
-    public Disc(User postedBy, String discname, String region, String city) {
+    public Disc(User postedBy, String discname, String region, String city, Integer keepDiscsFor) {
         this.postedBy = postedBy;
         this.notified = false;
         this.discname = discname;
         this.region = region;
         this.city = city;
+        this.expirationDate = LocalDate.now().plusDays(keepDiscsFor != null ? keepDiscsFor : 30);
     }
 
     public void addKeyword(DiscKeyword discKeyword) {

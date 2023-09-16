@@ -40,6 +40,12 @@ public class User extends Auditable{
     @Column(name = "canPostDiscs", nullable = false, columnDefinition = "boolean default false")
     private boolean canPostDiscs = false;
 
+    @Column(name= "sharePhoneNumber", nullable = false, columnDefinition = "boolean default false")
+    private boolean sharePhonenumber = false;
+
+    @Column(name = "keepDiscsFor", nullable = false, columnDefinition = "int default 30")
+    private int keepDiscsFor = 30;
+
     
 
     /*@CreatedDate     // AIKA on määritetty app propertiesissa UTC, jotta käännettävissä oli db/app missä tahansa hostattuna
@@ -56,6 +62,8 @@ public class User extends Auditable{
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.REMOVE) // cascade = remove, when user is deleted, all users discs are deleted
     private List<Disc> discs;
 
+
+
     public User() {
     }
 
@@ -70,6 +78,8 @@ public class User extends Auditable{
         this.city = city;
         this.description = description;
         this.canPostDiscs = false;
+        this.keepDiscsFor = 30;
+        this.sharePhonenumber = false;
     }
 
 
@@ -79,6 +89,14 @@ public class User extends Auditable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getKeepDiscsFor() {
+        return this.keepDiscsFor;
+    }
+
+    public void setKeepDiscsFor(int keepDiscsFor) {
+        this.keepDiscsFor = keepDiscsFor;
     }
 
     public String getUsername() {
@@ -100,6 +118,16 @@ public class User extends Auditable{
     public String getEmail() {
         return this.email;
     }
+
+    public boolean sharePhoneNumber() {
+        return this.sharePhonenumber;
+    }
+
+    public void sharePhoneNumber(boolean sharePhonenumber) {
+        this.sharePhonenumber = sharePhonenumber;
+    }
+
+
 
     public void setEmail(String email) {
         this.email = email;
@@ -149,6 +177,17 @@ public class User extends Auditable{
         this.canPostDiscs = canPostDiscs;
     }
 
+    public boolean isSharePhonenumber() {
+        return this.sharePhonenumber;
+    }
+
+    public boolean getSharePhonenumber() {
+        return this.sharePhonenumber;
+    }
+
+    public void setSharePhonenumber(boolean sharePhonenumber) {
+        this.sharePhonenumber = sharePhonenumber;
+    }
     public List<UserKeyword> getKeywords() {
         return this.keywords;
     }

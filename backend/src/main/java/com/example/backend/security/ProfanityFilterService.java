@@ -25,7 +25,7 @@ public class ProfanityFilterService {
             if(inputStream != null) {
                 profanityWords = new HashSet<>(Arrays.asList(mapper.readValue(inputStream, String[].class)));
             } else {
-                // Handle the case where the input stream is null, possibly because the file was not found
+                // null handling
                 System.err.println("Could not find wordlist.json");
             }
         } catch (IOException e) {

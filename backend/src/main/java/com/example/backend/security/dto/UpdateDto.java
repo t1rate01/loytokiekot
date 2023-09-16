@@ -1,5 +1,5 @@
 package com.example.backend.security.dto;
-import java.util.Objects;
+
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -26,11 +26,13 @@ public class UpdateDto {
 
     private String city;
 
+    private Boolean sharePhonenumber;
+
 
     public UpdateDto() {
     }
 
-    public UpdateDto(String username, String password, String email, String phonenumber , String region, String city, String description) {
+    public UpdateDto(String username, String password, String email, String phonenumber , String region, String city, String description, Boolean sharePhonenumber) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -38,6 +40,7 @@ public class UpdateDto {
         this.region = region;
         this.city = city;
         this.description = description;
+        this.sharePhonenumber = sharePhonenumber;
     }
 
     public String getUsername() {
@@ -55,6 +58,15 @@ public class UpdateDto {
     public void setRegion(String region) {
         this.region= region;
     }
+
+    public Boolean getSharePhonenumber() {
+        return this.sharePhonenumber;
+    }
+    
+    public void setSharePhonenumber(Boolean sharePhonenumber) {
+        this.sharePhonenumber = sharePhonenumber;
+    }
+
 
     public String getCity() {
         return this.city;
@@ -115,31 +127,5 @@ public class UpdateDto {
         setPhonenumber(phonenumber);
         return this;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof UpdateDto)) {
-            return false;
-        }
-        UpdateDto updateDto = (UpdateDto) o;
-        return Objects.equals(username, updateDto.username) && Objects.equals(password, updateDto.password) && Objects.equals(email, updateDto.email) && Objects.equals(phonenumber, updateDto.phonenumber);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, password, email, phonenumber);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " username='" + getUsername() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", phonenumber='" + getPhonenumber() + "'" +
-            "}";
-    }
-    
+ 
 }
