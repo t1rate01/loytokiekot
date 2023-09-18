@@ -13,7 +13,7 @@
  The app runs a @Scheduled function that compares posted discs to these keywords and will have a notification system to  
  let the user know if a match is made, possibly email system.  
 
- The project requires a lot of self learning, searching through internet forums and asking ChatGPT for tutorials.  
+ The project requires a lot of self learning, searching through internet forums and learning from tutorials.    
 
   The frontend of the application is planned to start by building a React.js based webapplication that uses the backend server.  
   Possibly have the Spring Boot also serve the frontend.  
