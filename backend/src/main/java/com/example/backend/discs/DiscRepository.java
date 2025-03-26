@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +25,10 @@ public interface DiscRepository extends JpaRepository<Disc, Long> {
     @Query("SELECT d FROM Disc d JOIN FETCH d.discKeywords ORDER BY d.createdAt DESC")
     Page<Disc> findAllWithKeywords(Pageable pageable);
 
+   // @EntityGraph(attributePaths = {"discKeywords", "postedBy"})
+    //Page<Disc> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<Disc> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("SELECT d FROM Disc d WHERE d.region = ?1")
     List<Disc> findByRegion(String region);
