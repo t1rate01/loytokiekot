@@ -144,6 +144,12 @@ public class DiscRestController {
         return ResponseEntity.ok(getDiscDtos);
     }*/
 
+    // /api/discs?page=0&size=10&sort=createdAt,desc
+    // Parameters:
+    // - page (int): 0-based index (page=0 is the first page)
+    // - size (int): number of items per page
+    // - sort (field,direction)
+
     @GetMapping("/api/discs")
     public ResponseEntity<Page<GetDiscDto>> getDiscs(@PageableDefault(size = 10) Pageable pageable) {
     return ResponseEntity.ok(discService.getAllDiscsWithKeywords(pageable));
