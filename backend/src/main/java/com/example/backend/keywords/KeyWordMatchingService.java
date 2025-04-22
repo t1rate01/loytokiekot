@@ -58,7 +58,7 @@ public class KeyWordMatchingService {
 
         for (User user : allUsers) {
             Set<String> userKeywords = user.getKeywords().stream()
-                    .map(UserKeyword::getValue)  // Adjust this to the correct method to get keyword value
+                    .map(UserKeyword::getValue) // Get the value of the keyword
                     .collect(Collectors.toSet());
             totalUserKeywordsProcessed += userKeywords.size();
 

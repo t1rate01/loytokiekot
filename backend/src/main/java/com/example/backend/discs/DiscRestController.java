@@ -146,12 +146,9 @@ public class DiscRestController {
 
     @GetMapping("/api/discs")
     public ResponseEntity<Page<GetDiscDto>> getDiscs(@PageableDefault(size = 10) Pageable pageable) {
-        Page<Disc> discPage = discService.getAllDiscsWithKeywords(pageable);
-        
-        Page<GetDiscDto> getDiscDtos = discPage.map(GetDiscDto::new);
-        
-        return ResponseEntity.ok(getDiscDtos);
-    }
+    return ResponseEntity.ok(discService.getAllDiscsWithKeywords(pageable));
+}
+
 
     @GetMapping("/api/discs/region/{region}")
     public ResponseEntity<List<GetDiscDto>> getDiscsByRegion(@PathVariable String region) {

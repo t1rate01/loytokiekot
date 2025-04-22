@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.discs.dto.DiscDto;
+import com.example.backend.discs.dto.GetDiscDto;
 import com.example.backend.discs.dto.UpdateDiscDto;
 import com.example.backend.keywords.DiscKeyWordRepository;
 import com.example.backend.keywords.DiscKeyword;
@@ -96,9 +97,14 @@ public class DiscService {
         return discRepository.findAll();
     }
 
-    public Page<Disc> getAllDiscsWithKeywords(Pageable pageable) {
-        return discRepository.findAllWithKeywords(pageable);
-    }
+public Page<GetDiscDto> getAllDiscsWithKeywords(Pageable pageable) {
+    Page<Disc> discPage = discRepository.findAllByOrderByCreatedAtDesc(pageable);
+    return discPage.map(this::toGetDto);
+}
+
+private GetDiscDto toGetDto(Disc disc) {
+    return new GetDiscDto(disc); // or create fields manually if needed
+}
 
 
     public Disc getDisc(Long id) {
