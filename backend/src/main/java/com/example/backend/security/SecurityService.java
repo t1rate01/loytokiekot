@@ -103,8 +103,6 @@ public class SecurityService {
     }
     }
 
-    // TODO: LOGOUT TOIMINTO, POISTA TOKEN TAI VANHENNA SE
-
     @Transactional
     public String updateUser(String username, UpdateDto updateDto) {
         User user = userRepository.findByUsername(username)

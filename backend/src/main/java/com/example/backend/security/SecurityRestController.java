@@ -113,8 +113,6 @@ public class SecurityRestController {
         }
     }
 
-    
-
     @GetMapping("/api/user/{username}")
     public ResponseEntity<?> getUserInfo(@PathVariable String username){
         Optional<User> userOptional = userRepository.findByUsername(username);
