@@ -138,6 +138,8 @@ public class SecurityService {
             }
             if(updateDto.getSharePhonenumber() != null){
                 user.setSharePhonenumber(updateDto.getSharePhonenumber());
+                // log to console
+                System.out.println("Share phone number: " + updateDto.getSharePhonenumber());
             }
 
 
@@ -164,15 +166,11 @@ public class SecurityService {
    
     
     public String getUsernameFromToken(String token) {   // checks for token, is token valid and returns username
-        if (token != null && token.startsWith("Bearer")) {
-             try {
-                String jwt = token.split(" ")[1];
-                return verifyToken(jwt);
-            } catch (Exception e) {
-                   return null;
-            }
-         }
-        return null;
+        try {
+            return verifyToken(token);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+        }
     }
 
     public boolean forgotPassword(String email) {
